@@ -1,19 +1,42 @@
 import 'package:flutter/material.dart';
-
 import 'dice_roller.dart';
 
 const startAlignment = Alignment.topLeft;
 const endAlignment = Alignment.bottomRight;
 
-class GradientContainer extends StatelessWidget {
-  const GradientContainer(this.color1, this.color2, {super.key});
+class GradientContainer extends StatefulWidget {
+  const GradientContainer({super.key});
 
-  const GradientContainer.purple({super.key})
-      : color1 = Colors.deepPurple,
-        color2 = Colors.indigo;
+  @override
+  State<GradientContainer> createState() => _GradientContainerState();
+}
 
-  final Color color1;
-  final Color color2;
+class _GradientContainerState extends State<GradientContainer> {
+  Color color1 = const Color.fromARGB(255, 33, 5, 109);
+  Color color2 = const Color.fromARGB(255, 68, 21, 149);
+  String? resultMessage;
+
+  void updateBackground(bool isWin) {
+    setState(() {
+      if (isWin) {
+        color1 = Colors.green.shade700;
+        color2 = Colors.green.shade400;
+        resultMessage = "You Win!";
+      } else {
+        color1 = Colors.red.shade700;
+        color2 = Colors.red.shade400;
+        resultMessage = "You Lose!";
+      }
+    });
+  }
+
+  void resetBackground() {
+    setState(() {
+      color1 = const Color.fromARGB(255, 33, 5, 109);
+      color2 = const Color.fromARGB(255, 68, 21, 149);
+      resultMessage = null;
+    });
+  }
 
   @override
   Widget build(context) {
@@ -25,8 +48,25 @@ class GradientContainer extends StatelessWidget {
           end: endAlignment,
         ),
       ),
-      child: const Center(
-        child: DiceRoller(),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (resultMessage != null)
+              Text(
+                resultMessage!,
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            DiceRoller(
+              onGameEnd: updateBackground,
+              onReset: resetBackground,
+            ),
+          ],
+        ),
       ),
     );
   }
